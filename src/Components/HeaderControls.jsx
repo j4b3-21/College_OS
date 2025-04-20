@@ -37,7 +37,7 @@ const HeaderControls = () => {
                     aria-label="Open menu"
                 >
                     <svg
-                        className="w-8 h-8 text-white"
+                        className="w-8 h-8 text-black"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"

@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
 import Marquee from "react-fast-marquee";
 import EventCard from "../Components/EventCard.jsx";
 import HeaderControls from "../Components/HeaderControls.jsx";
+import { auth } from "../firebase";
 
 const events = [
     {
@@ -29,6 +32,7 @@ const events = [
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTD4He3c5wsyAqo2ZU8fn43FnCdc0H549Ame5NejbsrdB_J4z8oU89AJDRf&s=10"
     }
 ];
+
 const quickLinks = [
     "🗓️ Upcoming Tech Fest - May 12",
     "📢 Club Registrations Open",
@@ -38,39 +42,34 @@ const quickLinks = [
     "📬 Hostel Room Allotment Notice"
 ];
 
-
 const MainPage = () => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                navigate("/login");
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [navigate]);
+
+    if (loading) return <div className="text-center mt-10 text-black">Loading...</div>;
 
     return (
-        <div className="relative h-screen text-white overflow-hidden">
-            {/* Logout button fixed in top-right */}
-            <HeaderControls/>
+        <div className="min-h-screen w-full bg-gradient-to-r from-[#E5EDF5] to-[#ECE0F3] text-black">
+            <HeaderControls />
 
-
-            {/* Marquee and other content */}
             <div className="py-10 px-130">
-                <img src="https://iiitt.ac.in/images/logo-iiit-new.png" alt="IIIT Logo" className=""/>
+                <img src="https://iiitt.ac.in/images/logo-iiit-new.png" alt="IIIT Logo" className="" />
             </div>
 
-            <div className="flex flex-col pr-10  h-full pl-10">
-                <div className="h-full w-full ">
-                    <Marquee
-                        speed={"100"}
-                        delay="0"
-                        direction=""
-                        autoFill={false}
-                        className="h-full w-full "
-                        pauseOnHover={true}
-                    >
-                        {events.map((event, index) => (
-                            <EventCard
-                                key={index}
-                                title={event.title}
-                                date={event.date}
-                                description={event.description}
-                                image={event.image}
-                            />
-                        ))}
+            <div className="px-6 lg:px-20">
+                <div className="mb-12">
+                    <Marquee speed={100} pauseOnHover gradient={false}>
                         {events.map((event, index) => (
                             <EventCard
                                 key={index}
@@ -82,13 +81,12 @@ const MainPage = () => {
                         ))}
                     </Marquee>
                 </div>
-                <div className="h-full rounded-xl p-4 text-sm text-black">
-                    <h2 className="text-xl font-semibold mb-4 border-b border-black pb-2">Quick Links</h2>
-                    <ul className="space-y-3">
+
+                <div className="bg-white rounded-xl p-6 shadow-md">
+                    <h2 className="text-xl font-semibold mb-4 border-b pb-2">Quick Links</h2>
+                    <ul className="space-y-3 text-gray-800">
                         {quickLinks.map((link, index) => (
-                            <li key={index} className="hover:underline cursor-pointer">
-                                {link}
-                            </li>
+                            <li key={index} className="hover:underline cursor-pointer">{link}</li>
                         ))}
                     </ul>
                 </div>
