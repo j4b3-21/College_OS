@@ -4,6 +4,8 @@ import MainPage from "./pages/MainPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import Alumni from "./pages/Alumni.jsx";
 import EventsPage from "./pages/EventsPage.jsx";
+import Clubs from "./pages/Clubs.jsx";
+import ClubDetail from "./Components/ClubDetails.jsx";
 
 const App = () => {
     return (
@@ -13,6 +15,8 @@ const App = () => {
                 <Route path={"/"} element={<MainPage />} />
                 <Route path={"/alumni"} element={<Alumni />} />
                 <Route path={"/events"} element={<EventsPage />} />
+                <Route path="/clubs" element={<Clubs />} />
+                <Route path="/clubs/:clubId" element={<ClubDetail />} />
 
             </Routes>
         </div>

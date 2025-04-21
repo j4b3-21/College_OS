@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth.jsx";
 import { Link } from "react-router-dom";
@@ -6,10 +5,14 @@ import { Link } from "react-router-dom";
 const Sidebar = ({ isOpen, onClose }) => {
     const sidebarRef = useRef();
     const user = useAuth(); // This should return user from Firebase auth
+
     const navItems = [
-        { label: "Alumni", icon: "🏠", path: "/alumni" },
-        { label: "Events", icon: "📊", path: "/events" }
+        { label: "Home", icon: "🏠", path: "/" },
+        { label: "Alumni", icon: "👾", path: "/alumni" },
+        { label: "Events", icon: "📊", path: "/events" },
+        { label: "Clubs", icon: "👅", path: "/clubs" }
     ];
+
     useEffect(() => {
         if (isOpen) {
             sidebarRef.current.style.transform = "translateX(0)";
@@ -20,12 +23,12 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex">
-            {/* Conditionally render the backdrop */}
+            {/* Backdrop */}
             {isOpen && (
                 <div
                     className="absolute inset-0 bg-black opacity-50 backdrop-blur-sm"
                     onClick={onClose}
-                    style={{ zIndex: 40 }} // Backdrop is only visible when the sidebar is open
+                    style={{ zIndex: 40 }}
                 />
             )}
 
@@ -36,14 +39,22 @@ const Sidebar = ({ isOpen, onClose }) => {
             >
                 {/* User Profile */}
                 <div className="flex items-center space-x-4">
-                    <img
-                        src={user?.photoURL || "https://i.pravatar.cc/40"}
-                        alt="profile"
-                        className="w-10 h-10 rounded-xl"
-                    />
+                    {user ? (
+                        <img
+                            src={user.photoURL || "https://i.pravatar.cc/40"}
+                            alt="profile"
+                            className="w-10 h-10 rounded-xl object-cover border border-gray-200"
+                        />
+                    ) : (
+                        <div className="w-10 h-10 rounded-xl bg-gray-300 animate-pulse" />
+                    )}
                     <div>
-                        <h2 className="font-semibold">{user?.displayName || "Guest User"}</h2>
-                        <p className="text-sm text-gray-500">{user?.email}</p>
+                        <h2 className="font-semibold">
+                            {user?.displayName || "Guest User"}
+                        </h2>
+                        <p className="text-sm text-gray-500">
+                            {user?.email || ""}
+                        </p>
                     </div>
                 </div>
 

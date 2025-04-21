@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import OngoingEventCard from "../Components/ongoingEventcard.jsx";
 import HeaderControls from "../Components/HeaderControls.jsx";
 
+
 const dummyEvents = [
     {
         id: "event1",
@@ -27,6 +28,7 @@ const dummyEvents = [
 ];
 
 const EventsPage = () => {
+
     const [expandedId, setExpandedId] = useState(null);
     const [registeredEvents, setRegisteredEvents] = useState({});
     const [formData, setFormData] = useState({

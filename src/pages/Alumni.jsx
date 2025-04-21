@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import HeaderControls from "../Components/HeaderControls.jsx";
+
 
 const data =[
     {
@@ -137,6 +138,7 @@ const data =[
     }];
 
 const AlumniCard = ({ title, date, description, image, rollNumber, isExpanded, onClick }) => {
+
     return (
         <div
             onClick={onClick}
@@ -162,6 +164,7 @@ const AlumniCard = ({ title, date, description, image, rollNumber, isExpanded, o
 };
 
 const Alumni = () => {
+
     const [expandedCardIndex, setExpandedCardIndex] = useState(null);
 
     const handleCardClick = (index) => {
