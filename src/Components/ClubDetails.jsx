@@ -2,43 +2,35 @@ import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import HeaderControls from "./HeaderControls.jsx";
 import Marquee from "react-fast-marquee";
-
-const dummyClubData = {
-    coding: {
-        icon: "💻",
-        name: "Coding Club",
-        coordinator: "John Doe",
-        faculty: "Prof. Smith",
-        members: ["Alice", "Bob", "Charlie", "David"],
-        studentLink: "https://example.com/student/coding",
-        coordinatorLink: "https://example.com/coordinator/coding",
-        achievements: [
-            { title: "Hackathon Winner", description: "Won Smart India Hackathon 2024" },
-            { title: "Top Project", description: "Featured on GitHub Trending" },
-        ],
-    },
-    robotics: {
-        icon: "🤖",
-        name: "Robotics Club",
-        coordinator: "Jane Roe",
-        faculty: "Prof. Johnson",
-        members: ["Eva", "Max", "Leo"],
-        studentLink: "https://example.com/student/robotics",
-        coordinatorLink: "https://example.com/coordinator/robotics",
-        achievements: [
-            { title: "TechFest Finalist", description: "Finalist at IIT Bombay TechFest 2024" },
-            { title: "Innovation Award", description: "Awarded best innovation at RoboCon" },
-        ],
-    },
-};
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const ClubDetail = () => {
     const { clubId } = useParams();
-    const club = dummyClubData[clubId];
-
+    const [club, setClub] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null);
     const studentRef = useRef(null);
     const coordinatorRef = useRef(null);
+
+    useEffect(() => {
+        const fetchClub = async () => {
+            try {
+                const clubRef = doc(db, "clubs", clubId);
+                const clubSnap = await getDoc(clubRef);
+                if (clubSnap.exists()) {
+                    setClub(clubSnap.data());
+                } else {
+                    setClub(null);
+                }
+            } catch (err) {
+                console.error("Error fetching club:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchClub();
+    }, [clubId]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -55,9 +47,8 @@ const ClubDetail = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    if (!club) {
-        return <div className="p-10 text-center text-xl">Club not found.</div>;
-    }
+    if (loading) return <div className="p-10 text-center text-lg">Loading club info...</div>;
+    if (!club) return <div className="p-10 text-center text-xl">Club not found.</div>;
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-r from-[#E5EDF5] to-[#ECE0F3] text-black p-10">
@@ -68,15 +59,15 @@ const ClubDetail = () => {
 
             <div className="max-w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 p-8">
                 {/* Left Side */}
-                <div className="space-y-6 ">
-                    <div className="text-6xl">{club.icon}</div>
+                <div className="space-y-6">
+                    <div className="text-6xl">{club.icon || "🎯"}</div>
                     <h2 className="text-2xl font-bold">{club.name}</h2>
-                    <p><strong>Coordinator:</strong> {club.coordinator}</p>
-                    <p><strong>Faculty:</strong> {club.faculty}</p>
+                    <p><strong>Coordinator:</strong> {club.coordinatorId}</p>
+                    <p><strong>Faculty:</strong> {club.facultyName}</p>
                     <div>
                         <p className="font-semibold">Current Members:</p>
                         <ul className="list-disc list-inside ml-2">
-                            {club.members.map((member, idx) => (
+                            {club.members?.map((member, idx) => (
                                 <li key={idx}>{member}</li>
                             ))}
                         </ul>
@@ -120,7 +111,7 @@ const ClubDetail = () => {
                             <div className="absolute mt-2 bg-white border rounded shadow-lg z-10 w-full">
                                 <a href={`${club.coordinatorLink}/dashboard`} className="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</a>
                                 <a href={`${club.coordinatorLink}/manage-events`} className="block px-4 py-2 text-sm hover:bg-gray-100">Manage Events</a>
-                                <a href={`${club.coordinatorLink}/reports`} className="block px-4 py-2 text-sm hover:bg-gray-100">Reports</a>
+                                <a href={`http://localhost:5173/track-equipment`} className="block px-4 py-2 text-sm hover:bg-gray-100">track</a>
                             </div>
                         )}
                     </div>
@@ -131,11 +122,11 @@ const ClubDetail = () => {
             {club.achievements && club.achievements.length > 0 && (
                 <div className="mt-16">
                     <h3 className="text-2xl font-bold mb-4">Club Achievements</h3>
-                    <Marquee speed={60} pauseOnHover='true' autoFill gradient={false}>
+                    <Marquee speed={60} pauseOnHover autoFill gradient={false}>
                         {club.achievements.map((ach, index) => (
                             <div
                                 key={index}
-                                className="bg-white rounded-md mx-4 px-6 py-4 w-64 h-32 flex flex-col justify-between "
+                                className="bg-white rounded-md mx-4 px-6 py-4 w-64 h-32 flex flex-col justify-between"
                             >
                                 <h4 className="font-bold text-lg truncate">{ach.title}</h4>
                                 <p className="text-sm text-gray-600 overflow-hidden text-ellipsis line-clamp-3">

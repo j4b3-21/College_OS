@@ -21,6 +21,11 @@ const Sidebar = ({ isOpen, onClose }) => {
         }
     }, [isOpen]);
 
+    // Fallback profile image
+    const profileImage = user?.photoURL?.trim()
+        ? user.photoURL
+        : "https://i.pravatar.cc/150?img=3"; // Default image
+
     return (
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
@@ -41,7 +46,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <div className="flex items-center space-x-4">
                     {user ? (
                         <img
-                            src={user.photoURL || "https://i.pravatar.cc/40"}
+                            src={profileImage}
                             alt="profile"
                             className="w-10 h-10 rounded-xl object-cover border border-gray-200"
                         />
